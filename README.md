@@ -20,23 +20,100 @@ npm install
 
 # 2) Start MinIO (S3-compatible storage)
 npm run minio:up
-# MinIO console: http://localhost:9001 (minioadmin / minioadmin)
-# Create bucket "myblog-images" + set public read policy
 
-# 3) Apply DB migrations
+# 3) Set MinIO bucket to public (run once)
+docker exec myblog-minio mc alias set local http://localhost:9000 minioadmin minioadmin
+docker exec myblog-minio mc anonymous set public local/myblog-images
+
+# 4) Apply DB migrations
 npm run db:migrate
 
-# 4) Run dev server
+# 5) Run dev server
 npm run dev
-# http://localhost:3000
+# http://localhost:5173
 # First visit to /admin redirects to /setup wizard
 ```
+
+## MinIO
+
+MinIO คือ S3-compatible object storage รันผ่าน Docker Compose ใช้เก็บรูปภาพที่ upload ผ่าน blog
+
+| URL | ใช้สำหรับ |
+|-----|----------|
+| http://localhost:9000 | S3 API endpoint (ใช้ใน .env) |
+| http://localhost:9001 | MinIO Console (Web UI) |
+
+**Credentials:** `minioadmin` / `minioadmin`
+
+### Start / Stop
+
+```bash
+npm run minio:up    # start MinIO (รัน Docker container ชื่อ myblog-minio)
+npm run minio:down  # stop MinIO
+```
+
+> ต้องรัน `npm run minio:up` ทุกครั้งที่เปิดเครื่องใหม่ก่อนใช้ฟีเจอร์ upload รูปค่ะ
+
+### First-time setup (ทำครั้งแรกครั้งเดียว)
+
+หลัง `npm run minio:up` ครั้งแรก ต้องสร้าง bucket และตั้ง public policy:
+
+**วิธีที่ 1 — CLI (แนะนำ)**
+
+```bash
+# 1) ลงทะเบียน alias ให้ mc client รู้จัก MinIO server
+docker exec myblog-minio mc alias set local http://localhost:9000 minioadmin minioadmin
+
+# 2) สร้าง bucket
+docker exec myblog-minio mc mb local/myblog-images
+
+# 3) ตั้ง policy เป็น public (ให้ทุกคนดูรูปได้โดยไม่ต้อง auth)
+docker exec myblog-minio mc anonymous set public local/myblog-images
+```
+
+**วิธีที่ 2 — Web UI**
+
+1. เปิด http://localhost:9001 → login `minioadmin` / `minioadmin`
+2. เมนูซ้าย → **Administrator** → **Buckets** → **Create Bucket**
+3. ตั้งชื่อ `myblog-images` → Create
+4. คลิก bucket `myblog-images` → แท็บ **Access Policy** → เปลี่ยนเป็น `public` → Save
+
+### ตรวจสอบ
+
+```bash
+# ดู bucket และ policy ที่ตั้งไว้
+docker exec myblog-minio mc anonymous get local/myblog-images
+# ควรได้: Access permission for `local/myblog-images` is `public`
+```
+
+### เปลี่ยน credentials (production)
+
+แก้ใน `.env` และ `docker-compose.yml` ให้ตรงกัน:
+
+```bash
+# .env
+S3_ACCESS_KEY_ID=your-access-key
+S3_SECRET_ACCESS_KEY=your-secret-key
+
+# docker-compose.yml
+MINIO_ROOT_USER: your-access-key
+MINIO_ROOT_PASSWORD: your-secret-key
+```
+
+## Dev vs Production
+
+| | Dev (`npm run dev`) | Production (`npm start`) |
+|--|---------------------|--------------------------|
+| Port | 5173 | 3000 |
+| Build ก่อน? | ไม่ต้อง | ต้องรัน `npm run build` |
+| Hot reload | ✅ | ❌ |
 
 ## Production
 
 ```bash
 npm run build
 npm start
+# http://localhost:3000
 ```
 
 Deploy: copy `build/`, `migrations/`, `scripts/`, `package.json`, `server.mjs` to server.
