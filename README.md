@@ -31,8 +31,28 @@ npm run db:migrate
 # 5) Run dev server
 npm run dev
 # http://localhost:5173
-# First visit to /admin redirects to /setup wizard
 ```
+
+## First-run wizard
+
+เมื่อรันครั้งแรก ระบบยังไม่มี admin account — ต้องตั้งค่าผ่าน setup wizard:
+
+1. เปิด http://localhost:5173/admin → redirect ไป `/setup` อัตโนมัติ
+2. กรอก **Username** และ **Password** (อย่างน้อย 8 ตัวอักษร)
+3. กด **Create Admin Account**
+4. ระบบ login ให้อัตโนมัติ → เข้าสู่ `/admin` dashboard
+
+> ทำครั้งเดียว — หลังจากนี้ใช้ `/login` เพื่อเข้าสู่ระบบปกติ
+
+## Login / Logout
+
+```
+URL:  http://localhost:5173/login
+```
+
+- กรอก Username + Password ที่ตั้งไว้ตอน setup
+- หลัง login สำเร็จ → redirect ไป `/admin`
+- Logout: คลิก avatar มุมขวาบน → Logout (หรือ POST `/auth/logout`)
 
 ## MinIO
 
