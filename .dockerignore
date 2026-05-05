@@ -1,0 +1,8 @@
+node_modules
+build
+.react-router
+data
+.env
+.env.local
+.git
+*.md

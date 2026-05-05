@@ -54,6 +54,47 @@ URL:  http://localhost:5173/login
 - หลัง login สำเร็จ → redirect ไป `/admin`
 - Logout: คลิก avatar มุมขวาบน → Logout (หรือ POST `/auth/logout`)
 
+## Docker Compose (Full Stack)
+
+รันทั้ง myblog app + MinIO ด้วยคำสั่งเดียว ไม่ต้อง `npm run dev` แยก
+
+```bash
+# 1) Copy .env และแก้ SESSION_SECRET ให้ยาวอย่างน้อย 32 ตัวอักษร
+cp .env.example .env
+
+# 2) Build image + start ทุก service
+docker compose up -d --build
+
+# 3) ดู log
+docker compose logs -f app
+
+# 4) เปิด browser
+# http://localhost:3000   ← myblog
+# http://localhost:9001   ← MinIO Console
+```
+
+> MinIO bucket `myblog-images` จะถูกสร้างและตั้ง public policy อัตโนมัติผ่าน `minio-init` service
+
+### Services
+
+| Service | หน้าที่ |
+|---------|--------|
+| `minio` | S3-compatible storage |
+| `minio-init` | สร้าง bucket + ตั้ง public policy (รันครั้งเดียว) |
+| `app` | myblog Node.js SSR app |
+
+### คำสั่งที่ใช้บ่อย
+
+```bash
+docker compose up -d --build   # build ใหม่ + start
+docker compose up -d           # start (ไม่ build ใหม่)
+docker compose down            # stop ทุก service
+docker compose logs -f app     # ดู log แบบ realtime
+docker compose ps              # ดู status ทุก service
+```
+
+---
+
 ## MinIO
 
 MinIO คือ S3-compatible object storage รันผ่าน Docker Compose ใช้เก็บรูปภาพที่ upload ผ่าน blog
