@@ -2,6 +2,10 @@ import { data } from "react-router";
 import type { Route } from "./+types/api.upload-image";
 import { requireUser } from "~/lib/session.server";
 import { getServerContext } from "~/server-context";
+import sharp from "sharp";
+
+const ALLOWED = ["jpg", "jpeg", "png", "webp", "gif", "avif"];
+const MAX_PX = 1600;
 
 export async function action({ request }: Route.ActionArgs) {
   const ctx = getServerContext();
@@ -15,13 +19,26 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-  const allowed = ["jpg", "jpeg", "png", "webp", "gif", "avif"];
-  if (!allowed.includes(ext)) {
+  if (!ALLOWED.includes(ext)) {
     return data({ error: "File type not allowed" }, { status: 400 });
   }
 
-  const key = `images/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const url = await ctx.storage.put(key, buffer, file.type);
+  const raw = Buffer.from(await file.arrayBuffer());
+
+  // GIF: skip processing (preserve animation)
+  const isGif = ext === "gif";
+  const [outputBuffer, outputType] = isGif
+    ? [raw, "image/gif"]
+    : [
+        await sharp(raw)
+          .resize(MAX_PX, MAX_PX, { fit: "inside", withoutEnlargement: true })
+          .webp({ quality: 85 })
+          .toBuffer(),
+        "image/webp",
+      ];
+
+  const outputExt = isGif ? "gif" : "webp";
+  const key = `images/${Date.now()}-${Math.random().toString(36).slice(2)}.${outputExt}`;
+  const url = await ctx.storage.put(key, outputBuffer, outputType);
   return data({ url });
 }
