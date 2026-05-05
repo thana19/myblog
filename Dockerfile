@@ -1,16 +1,16 @@
 # ---- deps: production dependencies (with native module build tools) ----
 FROM node:22-alpine AS deps
 WORKDIR /app
-RUN apk add --no-cache python3 make g++ && npm install -g npm@11
+RUN apk add --no-cache python3 make g++
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # ---- builder: full install + vite build ----
 FROM node:22-alpine AS builder
 WORKDIR /app
-RUN apk add --no-cache python3 make g++ && npm install -g npm@11
+RUN apk add --no-cache python3 make g++
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 COPY . .
 RUN npm run build
 
