@@ -232,6 +232,33 @@ export async function deleteCategory(db: DB, id: number): Promise<void> {
   db.prepare("DELETE FROM categories WHERE id = ?").run(id);
 }
 
+export async function getTagBySlug(db: DB, slug: string): Promise<Tag | null> {
+  const result = db
+    .prepare("SELECT * FROM tags WHERE slug = ?")
+    .get(slug) as Tag | undefined;
+  return result ?? null;
+}
+
+export async function getPublishedPostsByTag(
+  db: DB,
+  tagSlug: string,
+  opts: { limit?: number; offset?: number } = {}
+): Promise<Post[]> {
+  const { limit = 12, offset = 0 } = opts;
+  return db
+    .prepare(`
+      SELECT p.*, c.name AS category_name, c.slug AS category_slug
+      FROM posts p
+      LEFT JOIN categories c ON c.id = p.category_id
+      JOIN post_tags pt ON pt.post_id = p.id
+      JOIN tags t ON pt.tag_id = t.id
+      WHERE t.slug = ? AND p.status = 'published'
+      ORDER BY p.pinned DESC, p.published_at DESC
+      LIMIT ? OFFSET ?
+    `)
+    .all(tagSlug, limit, offset) as Post[];
+}
+
 export async function getPostTags(db: DB, postId: number): Promise<Tag[]> {
   return db
     .prepare(

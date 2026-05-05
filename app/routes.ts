@@ -4,6 +4,7 @@ export default [
   // Public routes
   index("routes/home.tsx"),
   route("post/:slug", "routes/post.$slug.tsx"),
+  route("tag/:slug", "routes/tag.$slug.tsx"),
   route(":slug", "routes/category.$slug.tsx"),
   route("about", "routes/about.tsx"),
   route("contact", "routes/contact.tsx"),
