@@ -54,13 +54,22 @@ export default function AdminIndex() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-on-surface">Posts</h1>
-        <Link
-          to="/admin/posts/new"
-          className="flex items-center gap-2 bg-primary-container text-on-primary-container px-5 py-2 rounded-lg text-sm font-medium hover:opacity-90"
-        >
-          <span className="material-symbols-outlined text-sm">add</span>
-          New Post
-        </Link>
+        <div className="flex items-center gap-2">
+          <a
+            href="/api/export-posts"
+            className="flex items-center gap-2 border border-outline-variant text-on-surface-variant px-5 py-2 rounded-lg text-sm font-medium hover:bg-surface-variant transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm">download</span>
+            Export
+          </a>
+          <Link
+            to="/admin/posts/new"
+            className="flex items-center gap-2 bg-primary-container text-on-primary-container px-5 py-2 rounded-lg text-sm font-medium hover:opacity-90"
+          >
+            <span className="material-symbols-outlined text-sm">add</span>
+            New Post
+          </Link>
+        </div>
       </div>
 
       <div className="relative mb-6">

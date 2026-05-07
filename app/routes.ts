@@ -20,6 +20,7 @@ export default [
   // API
   route("api/upload-image", "routes/api.upload-image.tsx"),
   route("api/more-posts", "routes/api.more-posts.tsx"),
+  route("api/export-posts", "routes/api.export-posts.tsx"),
 
   // Admin routes
   route("admin", "routes/admin.tsx", [
