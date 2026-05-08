@@ -1,6 +1,7 @@
 import { Link, Form, useNavigate, useRouteLoaderData } from "react-router";
 import { useState } from "react";
 import type { Category, SiteSettings } from "~/lib/db.server";
+import ThemeToggle from "~/components/ThemeToggle";
 
 interface NavbarProps {
   categories: Category[];
@@ -78,6 +79,8 @@ export default function Navbar({ categories, activeCategorySlug, user }: NavbarP
               />
             </form>
 
+            <ThemeToggle />
+
             <Link
               to="/profile"
               className="text-sm font-medium text-on-surface-variant hover:text-primary transition-colors"
@@ -146,6 +149,7 @@ export default function Navbar({ categories, activeCategorySlug, user }: NavbarP
                   className="w-full bg-surface-container-highest border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary text-on-surface placeholder:text-outline outline-none"
                 />
               </form>
+              <ThemeToggle />
               <Link
                 to="/profile"
                 onClick={() => setMenuOpen(false)}

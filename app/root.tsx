@@ -31,10 +31,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const siteName = data?.settings?.site_name ?? "Blog";
 
   return (
-    <html lang="th" className="dark">
+    <html lang="th">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.classList.toggle('dark',t==='dark');})();` }} />
         <Meta />
         <Links />
         <link rel="alternate" type="application/rss+xml" title={`${siteName} RSS Feed`} href="/feed.xml" />
