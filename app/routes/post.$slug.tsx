@@ -27,21 +27,25 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     incrementViewCount(ctx.db, params.slug),
   ]);
 
-  return { post, tags, categories, user };
+  const origin = new URL(request.url).origin;
+  return { post, tags, categories, user, origin };
 }
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
   if (!loaderData?.post) return [{ title: "Not Found" }];
-  const { post } = loaderData;
+  const { post, origin } = loaderData;
   return [
     { title: post.title },
     { name: "description", content: post.excerpt ?? post.title },
     { property: "og:title", content: post.title },
     { property: "og:description", content: post.excerpt ?? "" },
     { property: "og:type", content: "article" },
-    ...(post.featured_image
-      ? [{ property: "og:image", content: post.featured_image }]
-      : []),
+    { property: "og:image", content: `${origin}/og/${post.slug}` },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:image:type", content: "image/png" },
+    { property: "twitter:card", content: "summary_large_image" },
+    { property: "twitter:image", content: `${origin}/og/${post.slug}` },
   ];
 }
 

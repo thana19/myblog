@@ -17,6 +17,9 @@ export default [
   route("auth/logout", "routes/auth.logout.tsx"),
   route("auth/password", "routes/auth.password.tsx"),
 
+  // OG image generation
+  route("og/:slug", "routes/og.$slug.tsx"),
+
   // API
   route("api/upload-image", "routes/api.upload-image.tsx"),
   route("api/more-posts", "routes/api.more-posts.tsx"),
