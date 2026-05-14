@@ -40,7 +40,7 @@
 | `/api/more-posts` | GET | Pagination API — params: `?q=`, `?category=`, `?tag=`, `?page=` — returns `{ posts, hasMore, page }` |
 | `/api/upload-image` | POST | Upload image, processed via sharp (resize 1600px, convert to WebP 85%), stored in S3/MinIO, returns public URL |
 | `/api/export-posts` | GET | Download all posts as Markdown zip (admin only) — frontmatter + content per file |
-| `/og/:slug` | GET | Auto-generated OG image PNG 1200×630 — title, excerpt, category overlay on dark bg |
+| `/og/:slug` | GET | Auto-generated OG image PNG 1200×630 — if post has featured_image: used as full-bleed bg with dark overlay; otherwise solid dark bg `#10131a`. Title, excerpt, category badge overlay. |
 
 ## Content Features
 
@@ -54,7 +54,7 @@
 - **Image Processing** — sharp: resize to 1600×1600px max, convert to WebP (GIF preserved as-is)
 - **Export Posts** — Download all posts as `.md` files in a zip archive (YAML frontmatter + content)
 - **Dark / Light Mode** — Toggle via localStorage, system default dark, blocking script prevents flash
-- **OG Image Auto-Gen** — Every post has `og:image` at `/og/:slug` (satori JSX → SVG → PNG via sharp, font from @fontsource/inter)
+- **OG Image Auto-Gen** — Every post has `og:image` at `/og/:slug` (satori JSX → SVG → PNG via sharp, font from @fontsource/inter). If post has `featured_image`: fetched and embedded as base64 data URI, used as full-bleed background with `rgba(10,13,20,0.72)` dark overlay for readability. Fallback: solid dark bg `#10131a`. Cached 24h.
 
 ## Database Schema (SQLite / better-sqlite3)
 
