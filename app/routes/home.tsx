@@ -64,7 +64,8 @@ export default function Home() {
     }
   }
 
-  const { categories, user, search } = initialData;
+  const { categories, user, search, settings } = initialData;
+  const showViewCount = settings.show_view_count;
   const allPosts = [...initialData.posts, ...extraPosts];
 
   const featuredPost = !search ? allPosts[0] : null;
@@ -125,6 +126,12 @@ export default function Home() {
                         })}
                       </p>
                     )}
+                    {showViewCount && featuredPost.view_count > 0 && (
+                      <span className="inline-flex items-center gap-1 text-xs text-outline mt-1">
+                        <span className="material-symbols-outlined text-sm leading-none">visibility</span>
+                        {featuredPost.view_count.toLocaleString()}
+                      </span>
+                    )}
                   </div>
                 </div>
               </a>
@@ -159,6 +166,12 @@ export default function Home() {
                             })}
                           </p>
                         )}
+                        {showViewCount && post.view_count > 0 && (
+                          <span className="inline-flex items-center gap-1 text-xs text-outline">
+                            <span className="material-symbols-outlined text-xs leading-none">visibility</span>
+                            {post.view_count.toLocaleString()}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </a>
@@ -178,7 +191,7 @@ export default function Home() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {gridPosts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post.id} post={post} showViewCount={showViewCount} />
               ))}
             </div>
             {hasMore && (

@@ -14,9 +14,10 @@ function getCategoryColor(slug: string | null) {
 
 interface PostCardProps {
   post: Post;
+  showViewCount?: boolean;
 }
 
-export default function PostCard({ post }: PostCardProps) {
+export default function PostCard({ post, showViewCount }: PostCardProps) {
   return (
     <article className="bg-surface-container-low rounded-lg overflow-hidden card-shadow flex flex-col transition-all hover:ring-1 hover:ring-primary group">
       <Link to={`/post/${post.slug}`} className="block">
@@ -61,6 +62,12 @@ export default function PostCard({ post }: PostCardProps) {
                 month: "long",
                 day: "numeric",
               })}
+            </p>
+          )}
+          {showViewCount && post.view_count > 0 && (
+            <p className="text-xs text-outline mt-1 flex items-center gap-1">
+              <span className="material-symbols-outlined text-sm leading-none">visibility</span>
+              {post.view_count.toLocaleString()}
             </p>
           )}
         </div>

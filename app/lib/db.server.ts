@@ -339,11 +339,13 @@ export async function getAnyAdminCredential(db: DB): Promise<AdminCredential | n
 export interface SiteSettings {
   site_name: string;
   tagline: string;
+  show_view_count: boolean;
 }
 
 const SITE_DEFAULTS: SiteSettings = {
   site_name: "My Blog",
   tagline: "A personal blog.",
+  show_view_count: false,
 };
 
 export async function getSiteSettings(db: DB): Promise<SiteSettings> {
@@ -355,6 +357,7 @@ export async function getSiteSettings(db: DB): Promise<SiteSettings> {
   return {
     site_name: map.site_name ?? SITE_DEFAULTS.site_name,
     tagline: map.tagline ?? SITE_DEFAULTS.tagline,
+    show_view_count: (map.show_view_count ?? "false") === "true",
   };
 }
 
@@ -371,9 +374,8 @@ export async function updateSiteSettings(
       stmt.run(key, value);
     }
   });
-  const entries = Object.entries(settings).filter(([, v]) => v !== undefined) as [
-    string,
-    string
-  ][];
+  const entries = Object.entries(settings)
+    .filter(([, v]) => v !== undefined)
+    .map(([k, v]) => [k, String(v)]) as [string, string][];
   tx(entries);
 }

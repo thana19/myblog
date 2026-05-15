@@ -31,7 +31,7 @@
 | Edit Post | `/admin/posts/:id/edit` | Pre-filled form, same fields as create |
 | Categories | `/admin/categories` | Create/delete categories, auto-slugify |
 | Static Page Editor | `/admin/pages/:slug` | Edit about / contact / profile via markdown editor |
-| Settings | `/admin/settings` | Site name, tagline, username/password management |
+| Settings | `/admin/settings` | Site name, tagline, show view count toggle, username/password management |
 
 ## API Endpoints
 
@@ -45,7 +45,7 @@
 ## Content Features
 
 - **Pinned Posts** — pinned posts appear first in all listings (home, category, tag)
-- **View Count** — incremented per post page visit, displayed in admin and post detail
+- **View Count** — incremented per post page visit, displayed in admin and post detail; optionally shown on home page cards (toggled via Settings → แสดงยอดวิวบนหน้าแรก)
 - **Full-text Search** — SQLite FTS5 virtual table on title, excerpt, content with auto-sync triggers
 - **Markdown Editor** — `@uiw/react-md-editor` v4, split-view, dark mode
 - **Markdown Rendering** — `@uiw/react-markdown-preview` (lazy-loaded, client-side)

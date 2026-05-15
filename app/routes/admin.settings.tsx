@@ -37,7 +37,8 @@ export async function action({ request }: Route.ActionArgs) {
     if (!site_name) {
       return data({ intent: "site", error: "กรุณากรอก Site Name" }, { status: 400 });
     }
-    await updateSiteSettings(ctx.db, { site_name, tagline });
+    const show_view_count = formData.get("show_view_count") === "on";
+    await updateSiteSettings(ctx.db, { site_name, tagline, show_view_count });
     return data({ intent: "site", success: true });
   }
 
@@ -120,6 +121,18 @@ export default function AdminSettings() {
               defaultValue={siteSettings.tagline}
               className="w-full bg-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary"
             />
+          </div>
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="show_view_count"
+              name="show_view_count"
+              defaultChecked={siteSettings.show_view_count}
+              className="w-4 h-4 accent-primary"
+            />
+            <label htmlFor="show_view_count" className="text-sm text-on-surface">
+              แสดงยอดวิวบนหน้าแรก
+            </label>
           </div>
           <div className="flex justify-end pt-2">
             <button
