@@ -5,16 +5,17 @@ import type { Route } from "./+types/category.$slug";
 import Navbar from "~/components/Navbar";
 import Footer from "~/components/Footer";
 import PostCard from "~/components/PostCard";
-import { getPublishedPosts, getCategories } from "~/lib/db.server";
+import { getPublishedPosts, getCategories, getSiteSettings } from "~/lib/db.server";
 import { getUserFromSession } from "~/lib/session.server";
 import type { Post } from "~/lib/db.server";
 import { getServerContext } from "~/server-context";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const ctx = getServerContext();
-  const [categories, user] = await Promise.all([
+  const [categories, user, settings] = await Promise.all([
     getCategories(ctx.db),
     getUserFromSession(request, ctx.sessionStorage),
+    getSiteSettings(ctx.db),
   ]);
 
   const category = categories.find((c) => c.slug === params.slug);
@@ -25,7 +26,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const posts = await getPublishedPosts(ctx.db, { categorySlug: params.slug, limit: limit + 1, offset: 0 });
   const hasMore = posts.length > limit;
 
-  return { category, categories, posts: posts.slice(0, limit), hasMore, user };
+  return { category, categories, posts: posts.slice(0, limit), hasMore, user, settings };
 }
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
@@ -38,7 +39,7 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
 
 export default function CategoryPage() {
   const initialData = useLoaderData<typeof loader>();
-  const { category, categories, user } = initialData;
+  const { category, categories, user, settings } = initialData;
 
   const [extraPosts, setExtraPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -84,7 +85,7 @@ export default function CategoryPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {allPosts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post.id} post={post} showViewCount={settings.show_view_count} />
               ))}
             </div>
             {hasMore && (
